@@ -33,7 +33,7 @@ defineProps({
     >
     <p class="mt-2">{{ title }}</p>
     <div class="flex justify-between">
-      <div class="flex flex-col mt-5"><span class="text-slate-400">Price</span>{{ price }} rub.<span></span></div>
+      <div class="flex flex-col mt-5"><span class="text-slate-400">Price</span><span>{{ price }} rub.</span></div>
       <img
         @click="onClickAdd"
         :src="!isAdded ? '/plus.svg' : '/checked.svg'"

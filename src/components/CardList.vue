@@ -22,7 +22,6 @@ const onClickAFavorite = () => { }
         :onClickAdd="onClickAdd"
         :onClickAFavorite="onClickAFavorite"
       />
-
     </div>
 
   </div>
