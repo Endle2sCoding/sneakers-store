@@ -7,18 +7,25 @@ import axios from "axios";
 const isOpen = ref(false);
 const items = ref([]);
 const filters = reactive({
-  sortBy: "",
+  sortBy: "name",
   searchQuery: ""
 });
-
 
 const onChangeSelect = (event) => {
   filters.sortBy = event.target.value;
 };
-
-onMounted(async () => {
+const onChangeSearchInput = (event) => {
+  filters.searchQuery = event.target.value;
+};
+const fetchItems = async () => {
   try {
-    const { data } = await axios.get("https://b93c3c2caba7db59.mokky.dev/items");
+    const params = {
+      sortBy: filters.sortBy,
+    };
+    if (filters.searchQuery) {
+      params.title = `*${filters.searchQuery}*`;
+    }
+    const { data } = await axios.get(`https://b93c3c2caba7db59.mokky.dev/items?`, { params });
     items.value = data;
 
   } catch (error) {
@@ -27,18 +34,15 @@ onMounted(async () => {
   // fetch("https://b93c3c2caba7db59.mokky.dev/items").then((res) => res.json()).then(data => console.log("data", data)
   // );
 
+};
+
+onMounted(async () => {
+  fetchItems();
 });
 watch(filters, async () => {
-  try {
-    const { data } = await axios.get("https://b93c3c2caba7db59.mokky.dev/items?sortBy=" + filters.sortBy);
-    items.value = data;
-
-  } catch (error) {
-    console.log(error);
-  }
+  fetchItems();
 });
-
-</script>
+;</script>
 
 <template>
   <Drawer :isOpen="isOpen" />
@@ -66,6 +70,7 @@ watch(filters, async () => {
               alt="search"
             >
             <input
+              @input="onChangeSearchInput"
               class="border border-gray-200 rounded-md py-2 pl-9 pr-4 outline-none focus:border-gray-400"
               type="text"
               placeholder="Search"
