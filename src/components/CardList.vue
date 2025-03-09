@@ -21,7 +21,7 @@ defineProps({
         :title="item.title"
         :price="item.price"
         :is-added="false"
-        :is-favourite="false"
+        :is-favorite="item.isFavorite"
         :onClickAdd="onClickAdd"
         :onClickAFavorite="onClickAFavorite"
       />

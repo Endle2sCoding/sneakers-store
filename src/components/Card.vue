@@ -4,22 +4,22 @@ defineProps({
   title: String,
   price: Number,
   isAdded: Boolean,
-  isFavourite: Boolean,
+  isFavorite: Boolean,
   onClickAdd: Function,
   onClickAFavorite: Function,
 });
 
 </script>
 <template>
-  <div class="relative border border-slate-100 rounded-3xl p-8 cursor-pointer 
+  <div class="relative border border-slate-100 rounded-3xl p-8 cursor-pointer
         transition hover:-translate-y-2 hover:shadow-xl
         bg-white
         ">
     <img
       @click="onClickAFavorite"
       class="absolute top-8 left-8"
-      :src="!isFavourite ? '/like-1.svg' : '/like-2.svg'"
-      :alt="!isFavourite ? 'like-1' : 'like-2'"
+      :src="!isFavorite ? '/like-1.svg' : '/like-2.svg'"
+      :alt="!isFavorite ? 'like-1' : 'like-2'"
     >
 
     <img

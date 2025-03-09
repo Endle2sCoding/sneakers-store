@@ -6,6 +6,7 @@ import { onMounted, reactive, ref, watch } from "vue";
 import axios from "axios";
 const isOpen = ref(false);
 const items = ref([]);
+// const favorites = ref([]);
 const filters = reactive({
   sortBy: "name",
   searchQuery: ""
@@ -17,6 +18,28 @@ const onChangeSelect = (event) => {
 const onChangeSearchInput = (event) => {
   filters.searchQuery = event.target.value;
 };
+
+const fetchFavorites = async () => {
+  try {
+    const { data } = await axios.get(`https://b93c3c2caba7db59.mokky.dev/favorites`);
+    items.value = items.value.map(item => {
+      const favorite = data.find(d => item.id === d.parentId);
+      if (!favorite) {
+        return item;
+      }
+      return {
+        ...item,
+        isFavorite: true,
+        parentId: data.id
+      };
+    }
+    );
+    console.log(items.value);
+
+  } catch (error) {
+    console.log(error);
+  }
+};
 const fetchItems = async () => {
   try {
     const params = {
@@ -26,7 +49,11 @@ const fetchItems = async () => {
       params.title = `*${filters.searchQuery}*`;
     }
     const { data } = await axios.get(`https://b93c3c2caba7db59.mokky.dev/items?`, { params });
-    items.value = data;
+    items.value = data.map(itemData => ({
+      ...itemData,
+      isFavorite: false,
+      isAdded: false
+    }));
 
   } catch (error) {
     console.log(error);
@@ -37,11 +64,10 @@ const fetchItems = async () => {
 };
 
 onMounted(async () => {
-  fetchItems();
+  await fetchItems();
+  await fetchFavorites();
 });
-watch(filters, async () => {
-  fetchItems();
-});
+watch(filters, fetchItems);
 ;</script>
 
 <template>
