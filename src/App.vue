@@ -2,7 +2,7 @@
 import Header from "@/components/Header.vue";
 import CardList from "@/components/CardList.vue";
 import Drawer from "./components/Drawer.vue";
-import { onMounted, reactive, ref, watch } from "vue";
+import { onMounted, reactive, ref, watch, provide } from "vue";
 import axios from "axios";
 const isOpen = ref(false);
 const items = ref([]);
@@ -34,11 +34,36 @@ const fetchFavorites = async () => {
       };
     }
     );
-    console.log(items.value);
 
   } catch (error) {
     console.log(error);
   }
+};
+const addToFavorite = async (item) => {
+  try {
+    if (!item.isFavorite) {
+      console.log(item);
+      const obj = {
+        parentId: item.id
+      };
+      item.isFavorite = true;
+      const { data } = await axios.post(`https://b93c3c2caba7db59.mokky.dev/favorites`, obj);
+      item.favoriteId = data.id;
+      console.log("item.favoriteId", item.favoriteId);
+      console.log("data", data.id);
+    } else {
+      console.log("item.favoriteId", item.favoriteId);
+      console.log("item", item);
+
+      item.isFavorite = false;
+      await axios.delete(`https://b93c3c2caba7db59.mokky.dev/favorites/${item.favoriteId}`);
+      item.favoriteId = null;
+    }
+  } catch (error) {
+    console.log(error);
+
+  }
+
 };
 const fetchItems = async () => {
   try {
@@ -52,6 +77,7 @@ const fetchItems = async () => {
     items.value = data.map(itemData => ({
       ...itemData,
       isFavorite: false,
+      favoriteId: null,
       isAdded: false
     }));
 
@@ -68,8 +94,8 @@ onMounted(async () => {
   await fetchFavorites();
 });
 watch(filters, fetchItems);
-;</script>
-
+provide("addToFavorite", addToFavorite);
+</script>
 <template>
   <Drawer :isOpen="isOpen" />
   <div class="w-4/5 m-auto bg-white  min-h-[calc(100vh-56px)] rounded-xl shadow-xl mt-14 ">
@@ -108,7 +134,10 @@ watch(filters, fetchItems);
     </div>
     <div>
 
-      <CardList :items="items" />
+      <CardList
+        :items="items"
+        @addToFavorite="addToFavorite"
+      />
     </div>
 
   </div>
