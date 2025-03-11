@@ -4,9 +4,17 @@ import CardList from "@/components/CardList.vue";
 import Drawer from "./components/Drawer.vue";
 import { onMounted, reactive, ref, watch, provide } from "vue";
 import axios from "axios";
-const isOpen = ref(false);
+
 const items = ref([]);
 // const favorites = ref([]);
+const drawerOpen = ref(false);
+const closeDrawer = () => {
+  drawerOpen.value = false;
+};
+const openDrawer = () => {
+  drawerOpen.value = true;
+};
+
 const filters = reactive({
   sortBy: "name",
   searchQuery: ""
@@ -21,39 +29,37 @@ const onChangeSearchInput = (event) => {
 
 const fetchFavorites = async () => {
   try {
-    const { data } = await axios.get(`https://b93c3c2caba7db59.mokky.dev/favorites`);
-    items.value = items.value.map(item => {
-      const favorite = data.find(d => item.id === d.parentId);
+    const { data: favorites } = await axios.get(`https://b93c3c2caba7db59.mokky.dev/favorites/`);
+
+    items.value = items.value.map((item) => {
+      const favorite = favorites.find((favorite) => favorite.parentId === item.id);
+
       if (!favorite) {
         return item;
       }
+
       return {
         ...item,
         isFavorite: true,
-        parentId: data.id
+        favoriteId: favorite.id
       };
-    }
-    );
-
-  } catch (error) {
-    console.log(error);
+    });
+  } catch (err) {
+    console.log(err);
   }
+
 };
 const addToFavorite = async (item) => {
   try {
     if (!item.isFavorite) {
-      console.log(item);
       const obj = {
         parentId: item.id
       };
       item.isFavorite = true;
       const { data } = await axios.post(`https://b93c3c2caba7db59.mokky.dev/favorites`, obj);
       item.favoriteId = data.id;
-      console.log("item.favoriteId", item.favoriteId);
-      console.log("data", data.id);
     } else {
-      console.log("item.favoriteId", item.favoriteId);
-      console.log("item", item);
+
 
       item.isFavorite = false;
       await axios.delete(`https://b93c3c2caba7db59.mokky.dev/favorites/${item.favoriteId}`);
@@ -95,11 +101,15 @@ onMounted(async () => {
 });
 watch(filters, fetchItems);
 provide("addToFavorite", addToFavorite);
+provide("cartActions", {
+  openDrawer,
+  closeDrawer
+});
 </script>
 <template>
-  <Drawer :isOpen="isOpen" />
+  <Drawer v-if="drawerOpen" />
   <div class="w-4/5 m-auto bg-white  min-h-[calc(100vh-56px)] rounded-xl shadow-xl mt-14 ">
-    <Header />
+    <Header @openDrawer="openDrawer" />
     <div class="p-10">
       <div class="flex justify-between items-center">
         <h2 class="text-3xl font-bold ">All sneakers</h2>
