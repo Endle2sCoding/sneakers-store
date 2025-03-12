@@ -7,13 +7,13 @@ defineProps({
 
 <template>
   <div class="fixed top-0 left-0 h-full w-full bg-black z-10 opacity-70"></div>
-  <div class=" flex flex-col justify-between bg-white w-96 h-full fixed right-0 top-0 z-20 p-8">
+  <div class=" flex flex-col bg-white w-96 h-full fixed right-0 top-0 z-20 p-8">
     <div>
       <DrawerHeader />
       <CartListItem />
     </div>
 
-    <div class="flex flex-col gap-4 mb-3">
+    <div class="flex flex-col gap-4 mb-3 mt-6">
       <div class="flex gap-2">
         <span>Total</span>
         <div class="flex-1 border-b border-dashed"></div>

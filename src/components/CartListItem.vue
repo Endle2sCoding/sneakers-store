@@ -1,28 +1,27 @@
 <script setup>
-import CartItem from './CartItem.vue';
+import { inject } from 'vue';
+import CartItem from './CartItem.vue'
+;
+const { cart, removeFromCart } = inject('cart');
+
+// const onClickremove = () => {
+//   addToCart(item);
+// };
 </script>
 
+
 <template>
-  <div class="flex flex-col flex-1 gap-4">
+  <div
+    v-for="item in cart"
+    :key="item.id"
+    class="flex flex-col flex-1 gap-4"
+  >
     <CartItem
-      image-url="/sneakers/sneakers-1.jpg"
-      title="Мужские Кроссовки Nike Blazer Mid Suede"
-      :price="1205"
+      :image-url="item.imageUrl"
+      :title="item.title"
+      :price="item.price"
+      @onClickRemove="() => removeFromCart(item)"
     />
-    <CartItem
-      image-url="/sneakers/sneakers-1.jpg"
-      title="Мужские Кроссовки Nike Blazer Mid Suede"
-      :price="1205"
-    />
-    <CartItem
-      image-url="/sneakers/sneakers-1.jpg"
-      title="Мужские Кроссовки Nike Blazer Mid Suede"
-      :price="1205"
-    />
-    <CartItem
-      image-url="/sneakers/sneakers-1.jpg"
-      title="Мужские Кроссовки Nike Blazer Mid Suede"
-      :price="1205"
-    />
+
   </div>
 </template>
