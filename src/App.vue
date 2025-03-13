@@ -2,19 +2,27 @@
 import Header from "@/components/Header.vue";
 import CardList from "@/components/CardList.vue";
 import Drawer from "./components/Drawer.vue";
-import { onMounted, reactive, ref, watch, provide } from "vue";
+import { onMounted, reactive, ref, watch, provide, computed } from "vue";
 import axios from "axios";
-
+const BASE_URL = `https://b93c3c2caba7db59.mokky.dev`;
 const items = ref([]);
 const cart = ref([]);
-// const favorites = ref([]);
+const isCreatingOrder = ref(false);
+
+const cartDisabledButton = computed(() => isCreatingOrder.value ? true : totalPrice.value ? false : true);
+
 const drawerOpen = ref(false);
+
+const totalPrice = computed(() => cart.value.reduce((acc, item) => acc + item.price, 0));
+const vatPrice = computed(() => Math.round((totalPrice.value / 100) * 5));
+
 const closeDrawer = () => {
   drawerOpen.value = false;
 };
 const openDrawer = () => {
   drawerOpen.value = true;
 };
+
 
 const filters = reactive({
   sortBy: "name",
@@ -30,6 +38,22 @@ const removeFromCart = (item) => {
     cart.value.indexOf(item), 1
   );
   item.isAdded = false;
+};
+
+const createOrder = async () => {
+  try {
+    isCreatingOrder.value = true;
+    const { data } = await axios.post(`${BASE_URL}/orders`, {
+      items: cart.value,
+      totalPrice: totalPrice.value
+    });
+    cart.value = [];
+    return data;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    isCreatingOrder.value = false;
+  }
 };
 
 const onClickAddPlus = (item) => {
@@ -49,7 +73,7 @@ const onChangeSearchInput = (event) => {
 
 const fetchFavorites = async () => {
   try {
-    const { data: favorites } = await axios.get(`https://b93c3c2caba7db59.mokky.dev/favorites/`);
+    const { data: favorites } = await axios.get(`${BASE_URL}/favorites/`);
 
     items.value = items.value.map((item) => {
       const favorite = favorites.find((favorite) => favorite.parentId === item.id);
@@ -76,13 +100,13 @@ const addToFavorite = async (item) => {
         parentId: item.id
       };
       item.isFavorite = true;
-      const { data } = await axios.post(`https://b93c3c2caba7db59.mokky.dev/favorites`, obj);
+      const { data } = await axios.post(`${BASE_URL}/favorites`, obj);
       item.favoriteId = data.id;
     } else {
 
 
       item.isFavorite = false;
-      await axios.delete(`https://b93c3c2caba7db59.mokky.dev/favorites/${item.favoriteId}`);
+      await axios.delete(`${BASE_URL}/favorites/${item.favoriteId}`);
       item.favoriteId = null;
     }
   } catch (error) {
@@ -99,7 +123,7 @@ const fetchItems = async () => {
     if (filters.searchQuery) {
       params.title = `*${filters.searchQuery}*`;
     }
-    const { data } = await axios.get(`https://b93c3c2caba7db59.mokky.dev/items?`, { params });
+    const { data } = await axios.get(`${BASE_URL}/items?`, { params });
     items.value = data.map(itemData => ({
       ...itemData,
       isFavorite: false,
@@ -127,13 +151,22 @@ provide("cart", {
   openDrawer,
   closeDrawer,
   addToCart,
-  removeFromCart
+  removeFromCart,
 });
 </script>
 <template>
-  <Drawer v-if="drawerOpen" />
+  <Drawer
+    v-if="drawerOpen"
+    :totalPrice="totalPrice"
+    :vatPrice="vatPrice"
+    @createOrder="createOrder"
+    :disabledButton="cartDisabledButton"
+  />
   <div class="w-4/5 m-auto bg-white  min-h-[calc(100vh-56px)] rounded-xl shadow-xl mt-14 ">
-    <Header @openDrawer="openDrawer" />
+    <Header
+      :totalPrice="totalPrice"
+      @openDrawer="openDrawer"
+    />
     <div class="p-10">
       <div class="flex justify-between items-center">
         <h2 class="text-3xl font-bold ">All sneakers</h2>

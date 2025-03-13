@@ -8,7 +8,6 @@ const emit = defineEmits(["addToFavorite", "addToCart"]);
 
 
 
-
 </script>
 
 <template>
