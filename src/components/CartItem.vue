@@ -9,11 +9,11 @@ defineProps({
 <template>
   <div class="flex items-center border border-slate-200 p-4 rounded-xl gap-4 mt-2">
     <img
-      class="w-[70px] h-[70px]"
+      width="70"
+      height="70"
       :src="imageUrl"
       :alt="title"
     >
-
     <div class="flex flex-col flex-1 mt-2">
       <p class=""> {{ title }}</p>
       <div class="flex justify-between mt-2">
