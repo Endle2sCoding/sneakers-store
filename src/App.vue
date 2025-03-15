@@ -3,7 +3,6 @@ import Header from "@/components/Header.vue";
 import DrawerBlock from "./components/DrawerBlock.vue";
 import { ref, watch, provide, computed } from "vue";
 import axios from "axios";
-import Home from "./pages/Home.vue";
 import { RouterView } from "vue-router";
 
 const BASE_URL = `https://b93c3c2caba7db59.mokky.dev`;
@@ -63,6 +62,7 @@ provide("cart", {
   addToCart,
   removeFromCart,
 });
+provide("app", BASE_URL);
 // Cart end
 </script>
 <template>

@@ -9,7 +9,6 @@ defineProps({
   onClickAdd: Function,
   onClickFavorite: Function,
 });
-
 </script>
 <template>
   <div class="relative border border-slate-100 rounded-3xl p-8 cursor-pointer
@@ -17,17 +16,12 @@ defineProps({
         bg-white
         ">
     <img
+      v-if="onClickFavorite"
       @click="onClickFavorite"
       class="absolute top-8 left-8"
       :src="!isFavorite ? '/like-1.svg' : '/like-2.svg'"
       :alt="!isFavorite ? 'like-1' : 'like-2'"
     >
-
-    <img
-      :src="!isAdded ? '/plus.svg' : '/checked.svg'"
-      alt="plus"
-    >
-
     <img
       :src="imageUrl"
       alt="sneakers"
@@ -36,6 +30,7 @@ defineProps({
     <div class="flex justify-between">
       <div class="flex flex-col mt-5"><span class="text-slate-400">Price</span><span>{{ price }} rub.</span></div>
       <img
+        v-if="onClickAdd"
         @click="onClickAdd"
         :src="!isAdded ? '/plus.svg' : '/checked.svg'"
         alt="plus"

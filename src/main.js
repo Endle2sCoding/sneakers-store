@@ -8,7 +8,7 @@ import Favorites from './pages/Favorites.vue';
 import { createWebHistory } from 'vue-router';
 
 const routes = [
-  { path: '/',name:'Home',component: Home },
+  { path: '/', name:'Home', component: Home },
   { path: '/favorites',name:"Favorites", component: Favorites },
 ]
 
