@@ -44,7 +44,6 @@ provide("cart", {
   addToCart,
   removeFromCart,
 });
-provide("app", BASE_URL);
 // Cart end
 </script>
 <template>
